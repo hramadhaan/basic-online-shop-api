@@ -3,6 +3,15 @@ const PORT = process.env.PORT || 8080;
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+/**
+ *
+ * git branch -m main master
+ * git fetch origin
+ * git branch -u origin/master master
+ * git remote set-head origin -a
+ *
+ */
+
 // Import Router configuration
 const authRoutes = require("./routes/auth");
 const categoryRoutes = require("./routes/category");

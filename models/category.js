@@ -10,14 +10,6 @@ const categorySchema = new Schema(
     description: {
       type: String,
     },
-    isSubParent: {
-      type: Boolean,
-      default: false,
-    },
-    parentCategory: {
-      type: Schema.Types.ObjectId,
-      ref: "category",
-    },
   },
   { timestamps: true }
 );
