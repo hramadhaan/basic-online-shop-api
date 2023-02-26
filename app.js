@@ -15,6 +15,7 @@ require("dotenv").config();
 // Import Router configuration
 const authRoutes = require("./routes/auth");
 const categoryRoutes = require("./routes/category");
+const productRoutes = require("./routes/product");
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -32,6 +33,7 @@ app.use((req, res, next) => {
 // Initial Route Configuration
 app.use("/auth", authRoutes);
 app.use("/category", categoryRoutes);
+app.use("/product", productRoutes);
 
 app.use((error, req, res, next) => {
   console.log("App: ", error);
