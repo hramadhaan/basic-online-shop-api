@@ -10,5 +10,7 @@ const router = express.Router();
 
 router.post("/create", isAuth, categoryController.createCategory);
 router.post("/update", isAuth, categoryController.updateCategory);
+router.get("/remove/:id", isAuth, categoryController.removeCategory);
+router.get("/show", isAuth, categoryController.showCategory);
 
 module.exports = router;

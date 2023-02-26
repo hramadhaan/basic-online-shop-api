@@ -54,5 +54,27 @@ exports.updateCategory = async function (req, res, next) {
     success: true,
     message: "Category updated successfully",
     data: responseCategory,
-  })
+  });
+};
+
+exports.removeCategory = async function (req, res, next) {
+  errorHandler(req);
+  const { id } = req.params;
+
+  const responseCategory = await Category.findById(id);
+
+  if (!responseCategory) {
+    return res.status(404).json({
+      success: false,
+      message: "Category not found",
+    });
+  }
+
+  const removeCategory = await Category.findByIdAndRemove(id);
+
+  res.status(200).json({
+    success: true,
+    message: "Category deleted successfully",
+    data: removeCategory,
+  });
 };
