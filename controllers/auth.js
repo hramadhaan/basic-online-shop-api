@@ -32,3 +32,60 @@ exports.registration = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.login = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation Failed");
+    error.statusCode = 422;
+    error.data = errors.array();
+    throw error;
+  }
+
+  const { user, password } = req.body;
+  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+
+  try {
+    let auth;
+    if (emailRegex.test(user)) {
+      auth = await Auth.findOne({ email: user });
+    } else {
+      auth = await Auth.findOne({ username: user });
+    }
+
+    if (!auth) {
+      res.status(403).send({
+        success: false,
+        message: "Invalid Credentials",
+      });
+    }
+
+    const passwordValidator = await bcryptjs.compare(password, auth.password);
+
+    if (!passwordValidator) {
+      res.status(403).send({
+        success: false,
+        message: "Password is incorrect",
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        userId: auth._id.toString(),
+      },
+      process.env.JWT_SECRET
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Login successful",
+      token: token,
+      data: auth,
+    });
+  } catch (err) {
+    if (!res.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};

@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 
 // Import Router configuration
-// Code Here
+const authRoutes = require("./routes/auth");
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -20,9 +20,10 @@ app.use((req, res, next) => {
 });
 
 // Initial Route Configuration
-// Code Here
+app.use("/auth", authRoutes);
 
 app.use((error, req, res, next) => {
+    console.log('App: ', error)
   const status = error.statusCode || 500;
   const message = error.data?.[0]?.msg || "Server Failure";
   res.status(status).json({
