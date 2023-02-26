@@ -5,6 +5,7 @@ require("dotenv").config();
 
 // Import Router configuration
 const authRoutes = require("./routes/auth");
+const categoryRoutes = require("./routes/category");
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -21,9 +22,10 @@ app.use((req, res, next) => {
 
 // Initial Route Configuration
 app.use("/auth", authRoutes);
+app.use("/category", categoryRoutes);
 
 app.use((error, req, res, next) => {
-    console.log('App: ', error)
+  console.log("App: ", error);
   const status = error.statusCode || 500;
   const message = error.data?.[0]?.msg || "Server Failure";
   res.status(status).json({
