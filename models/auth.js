@@ -21,6 +21,10 @@ const authSchema = new Schema(
     avatar: {
       type: String,
     },
+    cartId: {
+      type: Schema.Types.ObjectId,
+      ref: 'cart'
+    }
   },
   { timestamps: true }
 );
