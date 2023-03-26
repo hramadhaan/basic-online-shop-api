@@ -16,6 +16,8 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth");
 const categoryRoutes = require("./routes/category");
 const productRoutes = require("./routes/product");
+const cartRoutes = require("./routes/cart");
+const employeeRoutes = require("./routes/employee");
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -34,6 +36,8 @@ app.use((req, res, next) => {
 app.use("/auth", authRoutes);
 app.use("/category", categoryRoutes);
 app.use("/product", productRoutes);
+app.use("/cart", cartRoutes);
+app.use("/employee", employeeRoutes);
 
 app.use((error, req, res, next) => {
   console.log("App: ", error);

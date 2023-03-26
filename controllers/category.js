@@ -1,3 +1,4 @@
+const { isEmpty } = require("lodash");
 const Category = require("../models/category");
 const { errorHandler } = require("../utils/error-handler");
 
@@ -37,6 +38,34 @@ exports.showCategory = async function (req, res, next) {
     message: "Category fetched successfully",
     data: responseCategory,
   });
+};
+
+exports.showCategoryById = async function (req, res, next) {
+  errorHandler(req);
+
+  try {
+    const { id } = req.params;
+
+    const responseCategory = await Category.findById(id);
+
+    if (isEmpty(responseCategory)) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Category found",
+      data: responseCategory,
+    });
+  } catch (err) {
+    if (!res.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
 
 exports.updateCategory = async function (req, res, next) {

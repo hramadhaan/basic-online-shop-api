@@ -26,13 +26,12 @@ const productSchema = new Schema(
     },
     sku: {
       type: String,
-      required: true,
-      unique: true,
+      required: false,
     },
     status: {
       type: String,
       required: true,
-      default: "available",
+      default: "available", //available and disabled
     },
     quantity: {
       type: Number,

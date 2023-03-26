@@ -1,3 +1,4 @@
+const { isEmpty } = require("lodash");
 const Product = require("../models/product");
 const { errorHandler } = require("../utils/error-handler");
 
@@ -42,16 +43,8 @@ exports.addProduct = async function (req, res, next) {
 
 exports.updateProduct = async function (req, res, next) {
   errorHandler(req);
-  const {
-    name,
-    description,
-    price,
-    category,
-    sku,
-    status = "available",
-    quantity,
-    id,
-  } = req.body;
+  const { name, description, price, category, sku, status, quantity, id } =
+    req.body;
 
   try {
     const result = await Product.findByIdAndUpdate(id, {
@@ -98,12 +91,15 @@ exports.removeProduct = function (req, res, next) {
   });
 };
 
-exports.getProducts = function (req, res, next) {
+exports.getProductById = async function (req, res, next) {
   errorHandler(req);
 
-  Product.find({}, (err, result) => {
-    if (err) {
-      return res.status(500).json({
+  try {
+    const id = req.params.id;
+    const productById = await Product.findById(id).populate("category");
+
+    if (isEmpty(productById)) {
+      return res.status(404).json({
         success: false,
         message: "Product not found",
       });
@@ -112,7 +108,31 @@ exports.getProducts = function (req, res, next) {
     res.status(200).json({
       success: true,
       message: "Products found",
-      data: result,
+      data: productById,
     });
-  });
+  } catch (err) {
+    if (!res.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getProducts = async function (req, res, next) {
+  errorHandler(req);
+
+  try {
+    const products = await Product.find().populate("category");
+
+    res.status(200).json({
+      success: true,
+      message: "Products found",
+      data: products,
+    });
+  } catch (err) {
+    if (!res.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
