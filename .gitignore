@@ -120,3 +120,5 @@ dist
 # Images
 images/*
 package-lock.json
+
+.env
