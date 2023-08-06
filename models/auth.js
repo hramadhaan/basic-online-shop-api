@@ -7,16 +7,16 @@ const authSchema = new Schema(
       type: String,
       required: true,
     },
+    name: {
+      type: String,
+      required: true,
+    },
     password: {
       type: String,
       required: true,
     },
     phone: {
       type: String,
-    },
-    username: {
-      type: String,
-      required: true,
     },
     avatar: {
       type: String,

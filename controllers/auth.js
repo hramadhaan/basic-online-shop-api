@@ -2,22 +2,17 @@ const Auth = require("../models/auth");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
+const { errorHandler } = require("../utils/error-handler");
 require("dotenv").config();
 
 exports.registration = async (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new Error("Validation Failed");
-    error.statusCode = 422;
-    error.data = errors.array();
-    throw error;
-  }
+  errorHandler(req)
 
-  const { username, email, password } = req.body;
+  const { name, email, password, phone } = req.body;
 
   try {
     const encryptedPassword = await bcryptjs.hash(password, 12);
-    const dataAuth = new Auth({ username, email, password: encryptedPassword });
+    const dataAuth = new Auth({ name, email, password: encryptedPassword, phone });
     const authResponse = await dataAuth.save();
 
     res.status(201).json({
@@ -49,8 +44,6 @@ exports.login = async (req, res, next) => {
     let auth;
     if (emailRegex.test(user)) {
       auth = await Auth.findOne({ email: user });
-    } else {
-      auth = await Auth.findOne({ username: user });
     }
 
     if (!auth) {

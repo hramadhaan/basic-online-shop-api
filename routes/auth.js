@@ -14,15 +14,12 @@ router.post(
       .trim()
       .isLength({ min: 5 })
       .withMessage("Minimum password 5 length"),
-    body("username")
+    body("phone")
       .trim()
       .custom((value) => {
-        return Auth.findOne({ username: value }).then((user) => {
+        return Auth.findOne({ phone: value }).then((user) => {
           if (user) {
-            const error = new Error("Email is already registered");
-            error.statusCode = 422;
-            error.data = errors.array();
-            throw error;
+            return Promise.reject("Phone already exists");
           }
         });
       }),

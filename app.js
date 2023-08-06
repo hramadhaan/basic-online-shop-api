@@ -40,7 +40,6 @@ app.use("/cart", cartRoutes);
 app.use("/employee", employeeRoutes);
 
 app.use((error, req, res, next) => {
-  console.log("App: ", error);
   const status = error.statusCode || 500;
   const message = error.data?.[0]?.msg || "Server Failure";
   res.status(status).json({
