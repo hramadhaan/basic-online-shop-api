@@ -9,12 +9,20 @@ exports.addToCart = async (req, res, next) => {
   errorHandler(req);
   try {
     const userId = req.userId;
-    let cartId = req.params.cartId;
     const { product, isChecked = true, quantity } = req.body;
+    const auth = await Auth.findById(userId);
+    let cartId = auth?.cartId?.toString() ?? "";
+    if (isEmpty(auth?.cartId?.toString())) {
+      cartId = req.params.cartId ?? "";
+    }
+    console.log("Cart ID", cartId);
 
     // Create cart ID if user is not have cart
     if (isEmpty(cartId)) {
+      console.log("Empty cart ID");
       const createCartId = new Cart({ items: [], price: 0, userId: userId });
+      auth.cartId = createCartId;
+      await auth.save();
       const saveCartId = await createCartId.save();
       cartId = saveCartId._id.toString();
     }
@@ -54,6 +62,9 @@ exports.addToCart = async (req, res, next) => {
       cartData.price = Number(
         cartData.price + parseInt(quantity) * productData.price
       );
+      cartData.totalQuantity = Number(
+        cartData.totalQuantity + parseInt(quantity)
+      );
 
       const saveCart = await cartData.save();
 
@@ -80,12 +91,15 @@ exports.addToCart = async (req, res, next) => {
       cartData.price = Number(
         cartData.price + parseInt(quantity) * productData.price
       );
+      cartData.totalQuantity = Number(
+        cartData.totalQuantity + parseInt(quantity)
+      );
 
-      const saveCart = cartData.save();
+      const saveCart = await cartData.save();
 
       res.status(201).json({
         success: true,
-        message: "Cart saved successfully",
+        message: "Cart updated successfully",
         data: {
           cartId: cartId,
           cart: saveCart,
@@ -103,8 +117,12 @@ exports.addToCart = async (req, res, next) => {
 exports.udpateCart = async (req, res, next) => {
   errorHandler(req);
   try {
-    // const userId = req.userId;
-    const cartId = req.params.cartId;
+    const userId = req.userId;
+    const auth = await Auth.findById(userId);
+    let cartId = auth?.cartId?.toString() ?? "";
+    if (isEmpty(auth?.cartId?.toString())) {
+      cartId = req.params.cartId ?? "";
+    }
     if (isEmpty(cartId)) {
       res.status(404).json({
         success: false,
@@ -127,13 +145,16 @@ exports.udpateCart = async (req, res, next) => {
     await itemCartData.save();
     const checkCartId = await Cart.findById(cartId).populate("items");
     let countNewPrice = 0;
+    let countTotalQty = 0;
     checkCartId?.items?.forEach((item) => {
-      console.log('Hanif: ', item)
+      console.log("Hanif: ", item);
       if (item.isChecked === true) {
         countNewPrice += parseInt(item.itemPrice);
+        countTotalQty += parseInt(item.quantity);
       }
     });
     checkCartId.price = parseInt(countNewPrice);
+    checkCartId.totalQuantity = parseInt(countTotalQty);
     const saveNewCartId = await checkCartId.save();
 
     res.status(201).json({

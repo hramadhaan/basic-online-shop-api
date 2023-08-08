@@ -11,11 +11,15 @@ const cartSchema = new Schema({
     type: Number,
     default: 0,
   },
+  totalQuantity: {
+    type: Number,
+    default: 0
+  },
   userId: {
     type: Schema.Types.ObjectId,
     ref: "auth",
     required: true
   }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("cart", cartSchema);
